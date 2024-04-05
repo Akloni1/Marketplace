@@ -92,14 +92,13 @@ namespace Marketplace.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductDelete(ProductDto model)
         {
-            if (ModelState.IsValid)
-            {
+
                 var response = await _productService.DeleteProductAsync<ResponseDto>(model.Id, "");
                 if (response.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
-            }
+
             return View(model);
         }
 
