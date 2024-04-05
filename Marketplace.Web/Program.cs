@@ -1,3 +1,6 @@
+using Marketplace.Web.Services.IServices;
+using Marketplace.Web.Services;
+
 namespace Marketplace.Web
 {
     public class Program
@@ -8,6 +11,13 @@ namespace Marketplace.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+
+            builder.Services.AddHttpClient<IProductService, ProductService>();
+
+            SD.ProductAPIBase = builder.Configuration.GetConnectionString("ServiceUrls:ProductAPI");
+
+            builder.Services.AddScoped<IProductService, ProductService>();
 
             var app = builder.Build();
 
