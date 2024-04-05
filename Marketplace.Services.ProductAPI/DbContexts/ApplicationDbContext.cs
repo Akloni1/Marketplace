@@ -13,13 +13,48 @@ namespace Marketplace.Services.ProductAPI.DbContexts
         {
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder.UseSqlServer("Server=DESKTOP-JUI9V07;Database=Competitions;Trusted_Connection=True;");
-        //    }
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Product>().HasData(new Product
+            {
+                Id = 1,
+                Name = "Мужские часы",
+                Price = 15000,
+                Description = "Мужские часы кварцевые.",
+                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                CategoryName = "Техника"
+            });
+            modelBuilder.Entity<Product>().HasData(new Product
+            {
+                Id = 2,
+                Name = "IPhone 11",
+                Price = 60000,
+                Description = "IPhone 11.",
+                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                CategoryName = "Техника"
+            });
+            modelBuilder.Entity<Product>().HasData(new Product
+            {
+                Id = 3,
+                Name = "Футболка",
+                Price = 4000,
+                Description = "Футболка размер M",
+                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                CategoryName = "Одежда"
+            });
+            modelBuilder.Entity<Product>().HasData(new Product
+            {
+                Id = 4,
+                Name = "Шуруп-глухарь",
+                Price = 150,
+                Description = "Шуруп-глухарь 12х180 мм для крепления деревянных лаг и реек. Цена указана за 8 шт.",
+                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                CategoryName = "Ремонт"
+            });
+        }
 
         public DbSet<Product> Products { get; set; }
     }
