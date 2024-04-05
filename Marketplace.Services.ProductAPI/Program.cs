@@ -1,4 +1,5 @@
 using Marketplace.Services.ProductAPI.DbContexts;
+using Marketplace.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketplace.Services.ProductAPI
@@ -11,6 +12,10 @@ namespace Marketplace.Services.ProductAPI
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddAutoMapper(typeof(Program));
+
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
