@@ -1,5 +1,6 @@
 using Marketplace.Web.Services.IServices;
 using Marketplace.Web.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Marketplace.Web
 {
@@ -14,6 +15,28 @@ namespace Marketplace.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddCookie("Cookies", c => c.ExpireTimeSpan = TimeSpan.FromMinutes(10))
+            .AddOpenIdConnect("oidc", options =>
+            {
+                options.Authority = configuration["ServiceUrls:IdentityAPI"];
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.ClientId = "marketplace";
+                options.ClientSecret = "secret";
+                options.ResponseType = "code";
+                options.ClaimActions.MapJsonKey("role", "role", "role");
+                options.ClaimActions.MapJsonKey("sub", "sub", "sub");
+                options.TokenValidationParameters.NameClaimType = "name";
+                options.TokenValidationParameters.RoleClaimType = "role";
+                options.Scope.Add("marketplace");
+                options.SaveTokens = true;
+
+            });
 
 
             builder.Services.AddHttpClient<IProductService, ProductService>();
@@ -36,7 +59,7 @@ namespace Marketplace.Web
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -39,7 +39,7 @@ namespace Marketplace.Services.Identity
                         ClientId="marketplace",
                         ClientSecrets= { new Secret("secret".Sha256())},
                         AllowedGrantTypes = GrantTypes.Code,
-                        RedirectUris={ "https://localhost:44308/signin-oidc" },
+                        RedirectUris={ "https://localhost:44308/signin-oidc", "https://localhost:7025/signin-oidc" },
                         PostLogoutRedirectUris={"https://localhost:44308/signout-callback-oidc" },
                         AllowedScopes=new List<string>
                         {
