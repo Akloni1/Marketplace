@@ -1,6 +1,7 @@
 using Duende.IdentityServer.AspNetIdentity;
 using Duende.IdentityServer.Services;
 using Marketplace.Services.Identity.DbContexts;
+using Marketplace.Services.Identity.Initializer;
 using Marketplace.Services.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,9 +35,16 @@ namespace Marketplace.Services.Identity
               .AddInMemoryClients(SD.Clients)
               .AddAspNetIdentity<ApplicationUser>();
 
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
+
             build.AddDeveloperSigningCredential();
 
             var app = builder.Build();
+
+            using var scope = app.Services.CreateScope();
+            var dbInitializer = scope.ServiceProvider.GetService<IDbInitializer>();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -52,7 +60,7 @@ namespace Marketplace.Services.Identity
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-
+            dbInitializer.Initialize();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
