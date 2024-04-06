@@ -89,7 +89,7 @@ namespace Marketplace.Services.ProductAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

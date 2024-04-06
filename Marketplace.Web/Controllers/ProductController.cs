@@ -20,7 +20,8 @@ namespace Marketplace.Web.Controllers
 
         public async Task<IActionResult> ProductIndex()
         {
-            var res = await _productService.GetAllProductsAsync<ResponseDto>("");
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var res = await _productService.GetAllProductsAsync<ResponseDto>(token);
 
             var listProductDto = res?.Result != null && res.IsSuccess ?
                 JsonConvert.DeserializeObject<IEnumerable<ProductDto>>(res.Result.ToString()) :
@@ -40,7 +41,8 @@ namespace Marketplace.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var res = await _productService.CreateProductAsync<ResponseDto>(productDto, "");
+                var token = await HttpContext.GetTokenAsync("access_token");
+                var res = await _productService.CreateProductAsync<ResponseDto>(productDto, token);
                 if (res != null && res.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
@@ -52,7 +54,8 @@ namespace Marketplace.Web.Controllers
 
         public async Task<IActionResult> ProductEdit(int id)
         {
-            var response = await _productService.GetProductByIdAsync<ResponseDto>(id, "");
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var response = await _productService.GetProductByIdAsync<ResponseDto>(id, token);
             if (response != null && response.IsSuccess)
             {
                 var model = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
@@ -65,9 +68,10 @@ namespace Marketplace.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductEdit(ProductDto productDto)
         {
+            var token = await HttpContext.GetTokenAsync("access_token");
             if (ModelState.IsValid)
             {
-                var res = await _productService.UpdateProductAsync<ResponseDto>(productDto, "");
+                var res = await _productService.UpdateProductAsync<ResponseDto>(productDto, token);
                 if (res != null && res.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
@@ -77,9 +81,11 @@ namespace Marketplace.Web.Controllers
             return View(productDto);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ProductDelete(int id)
         {
-            var response = await _productService.GetProductByIdAsync<ResponseDto>(id, "");
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var response = await _productService.GetProductByIdAsync<ResponseDto>(id, token);
             if (response != null && response.IsSuccess)
             {
                 var model = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
@@ -89,11 +95,12 @@ namespace Marketplace.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductDelete(ProductDto model)
         {
-
-                var response = await _productService.DeleteProductAsync<ResponseDto>(model.Id, "");
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var response = await _productService.DeleteProductAsync<ResponseDto>(model.Id, token);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));

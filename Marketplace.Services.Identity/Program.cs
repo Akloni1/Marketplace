@@ -3,6 +3,7 @@ using Duende.IdentityServer.Services;
 using Marketplace.Services.Identity.DbContexts;
 using Marketplace.Services.Identity.Initializer;
 using Marketplace.Services.Identity.Models;
+using Marketplace.Services.Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,6 +37,7 @@ namespace Marketplace.Services.Identity
               .AddAspNetIdentity<ApplicationUser>();
 
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
 
 
             build.AddDeveloperSigningCredential();

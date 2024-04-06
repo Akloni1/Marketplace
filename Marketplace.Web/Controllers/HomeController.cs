@@ -1,4 +1,5 @@
 ﻿using Marketplace.Web.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -33,7 +34,6 @@ namespace Marketplace.Web.Controllers
         [Authorize]
         public IActionResult Login()
         {
-
             return RedirectToAction(nameof(Index));
         }
 
