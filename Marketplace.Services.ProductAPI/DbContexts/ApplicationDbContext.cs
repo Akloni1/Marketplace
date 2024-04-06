@@ -24,7 +24,7 @@ namespace Marketplace.Services.ProductAPI.DbContexts
                 Name = "Мужские часы",
                 Price = 15000,
                 Description = "Мужские часы кварцевые.",
-                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                ImageUrl = "/Images/logo.png",
                 CategoryName = "Техника"
             });
             modelBuilder.Entity<Product>().HasData(new Product
@@ -33,7 +33,7 @@ namespace Marketplace.Services.ProductAPI.DbContexts
                 Name = "IPhone 11",
                 Price = 60000,
                 Description = "IPhone 11.",
-                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                ImageUrl = "/Images/logo.png",
                 CategoryName = "Техника"
             });
             modelBuilder.Entity<Product>().HasData(new Product
@@ -42,7 +42,7 @@ namespace Marketplace.Services.ProductAPI.DbContexts
                 Name = "Футболка",
                 Price = 4000,
                 Description = "Футболка размер M",
-                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                ImageUrl = "/Images/logo.png",
                 CategoryName = "Одежда"
             });
             modelBuilder.Entity<Product>().HasData(new Product
@@ -51,7 +51,7 @@ namespace Marketplace.Services.ProductAPI.DbContexts
                 Name = "Шуруп-глухарь",
                 Price = 150,
                 Description = "Шуруп-глухарь 12х180 мм для крепления деревянных лаг и реек. Цена указана за 8 шт.",
-                ImageUrl = "C:\\Users\\Михаил\\Desktop\\Marketplace\\Image\\screw.jpeg",
+                ImageUrl = "/Images/logo.png",
                 CategoryName = "Ремонт"
             });
         }

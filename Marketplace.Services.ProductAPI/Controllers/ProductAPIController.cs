@@ -18,7 +18,6 @@ namespace Marketplace.Services.ProductAPI.Controllers
             this._response = new ResponseDto();
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<ResponseDto> Get()
         {
@@ -36,7 +35,6 @@ namespace Marketplace.Services.ProductAPI.Controllers
             return _response;
         }
 
-        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public async Task<ResponseDto> Get(int id)
