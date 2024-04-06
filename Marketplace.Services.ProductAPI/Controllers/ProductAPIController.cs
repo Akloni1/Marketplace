@@ -17,6 +17,8 @@ namespace Marketplace.Services.ProductAPI.Controllers
             _productRepository = productRepository;
             this._response = new ResponseDto();
         }
+
+        [Authorize]
         [HttpGet]
         public async Task<ResponseDto> Get()
         {
@@ -34,6 +36,7 @@ namespace Marketplace.Services.ProductAPI.Controllers
             return _response;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public async Task<ResponseDto> Get(int id)
@@ -52,6 +55,7 @@ namespace Marketplace.Services.ProductAPI.Controllers
             return _response;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ResponseDto> Post([FromBody] ProductDto productDto)
         {
@@ -69,7 +73,7 @@ namespace Marketplace.Services.ProductAPI.Controllers
             return _response;
         }
 
-
+        [Authorize]
         [HttpPut]
         public async Task<ResponseDto> Put([FromBody] ProductDto productDto)
         {
@@ -88,6 +92,7 @@ namespace Marketplace.Services.ProductAPI.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         [Route("{id}")]
         public async Task<ResponseDto> Delete(int id)
         {
