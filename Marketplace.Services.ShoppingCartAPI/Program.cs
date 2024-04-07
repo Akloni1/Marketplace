@@ -1,4 +1,5 @@
 using Marketplace.Services.ShoppingCartAPI.DbContexts;
+using Marketplace.Services.ShoppingCartAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -16,7 +17,7 @@ namespace Marketplace.Services.ShoppingCartAPI
 
             builder.Services.AddAutoMapper(typeof(Program));
 
-            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
             // Add services to the container.
 
             builder.Services.AddControllers();
