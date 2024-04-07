@@ -1,24 +1,23 @@
-using Marketplace.Services.ProductAPI.DbContexts;
-using Marketplace.Services.ProductAPI.Repository;
+using Marketplace.Services.ShoppingCartAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace Marketplace.Services.ProductAPI
+namespace Marketplace.Services.ShoppingCartAPI
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // Add services to the container.
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-              options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddAutoMapper(typeof(Program));
 
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            // Add services to the container.
 
             builder.Services.AddControllers();
 
@@ -45,7 +44,7 @@ namespace Marketplace.Services.ProductAPI
 
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Marketplace.Services.ProductAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Marketplace.Services.ShoppingCartAPI", Version = "v1" });
                 c.EnableAnnotations();
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -74,10 +73,6 @@ namespace Marketplace.Services.ProductAPI
 
                 });
             });
-
-
-           
-
 
             var app = builder.Build();
 
