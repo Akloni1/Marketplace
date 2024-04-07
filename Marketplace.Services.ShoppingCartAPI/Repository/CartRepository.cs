@@ -49,7 +49,7 @@ namespace Marketplace.Services.ShoppingCartAPI.Repository
             //check if product exists in database, if not create it!
             var prodInDb = await _db.Products
                 .FirstOrDefaultAsync(u => u.Id == cartDto.CartDetails.FirstOrDefault()
-                .ProductId);
+                .Id);
             if (prodInDb == null)
             {
                 _db.Products.Add(cart.CartDetails.FirstOrDefault().Product);
@@ -76,7 +76,7 @@ namespace Marketplace.Services.ShoppingCartAPI.Repository
                 //if header is not null
                 //check if details has same product
                 var cartDetailsFromDb = await _db.CartDetails.AsNoTracking().FirstOrDefaultAsync(
-                    u => u.ProductId == cart.CartDetails.FirstOrDefault().ProductId &&
+                    u => u.Id == cart.CartDetails.FirstOrDefault().Id &&
                     u.CartHeaderId == cartHeaderFromDb.CartHeaderId);
 
                 if (cartDetailsFromDb == null)

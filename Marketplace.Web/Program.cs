@@ -31,6 +31,8 @@ namespace Marketplace.Web
                 options.ResponseType = "code";
                 options.ClaimActions.MapJsonKey("role", "role", "role");
                 options.ClaimActions.MapJsonKey("sub", "sub", "sub");
+                options.ClaimActions.MapJsonKey("role", "role", "role");
+                options.ClaimActions.MapJsonKey("sub", "sub", "sub");
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.TokenValidationParameters.RoleClaimType = "role";
                 options.Scope.Add("marketplace");
@@ -40,10 +42,12 @@ namespace Marketplace.Web
 
 
             builder.Services.AddHttpClient<IProductService, ProductService>();
-
+            builder.Services.AddHttpClient<ICartService, CartService>();
             SD.ProductAPIBase = configuration["ServiceUrls:ProductAPI"];
+            SD.ShoppingCartAPIBase = configuration["ServiceUrls:ShoppingCartAPI"];
 
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICartService, CartService>();
 
             var app = builder.Build();
 

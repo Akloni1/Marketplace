@@ -3,6 +3,7 @@ using Marketplace.Services.ShoppingCartAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Marketplace.Services.ShoppingCartAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240407154413_fixBug8")]
+    partial class fixBug8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,32 +22,6 @@ namespace Marketplace.Services.ShoppingCartAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("Marketplace.Services.ShoppingCartAPI.Models.CartDetails", b =>
-                {
-                    b.Property<int>("CartDetailsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartDetailsId"), 1L, 1);
-
-                    b.Property<int>("CartHeaderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("CartDetailsId");
-
-                    b.HasIndex("CartHeaderId");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("CartDetails");
-                });
 
             modelBuilder.Entity("Marketplace.Services.ShoppingCartAPI.Models.CartHeader", b =>
                 {
@@ -95,25 +71,6 @@ namespace Marketplace.Services.ShoppingCartAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("Marketplace.Services.ShoppingCartAPI.Models.CartDetails", b =>
-                {
-                    b.HasOne("Marketplace.Services.ShoppingCartAPI.Models.CartHeader", "CartHeader")
-                        .WithMany()
-                        .HasForeignKey("CartHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Marketplace.Services.ShoppingCartAPI.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CartHeader");
-
-                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

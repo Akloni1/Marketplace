@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.Services.ShoppingCartAPI.Controllers
 {
+    [ApiController]
+    [Route("api/cart")]
     public class CartAPIController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
@@ -32,7 +34,7 @@ namespace Marketplace.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPost("AddCart")]
-        public async Task<ResponseDto> AddCart(CartDto cartDto)
+        public async Task<ResponseDto> AddCart([FromBody] CartDto cartDto)
         {
             try
             {
@@ -69,6 +71,39 @@ namespace Marketplace.Services.ShoppingCartAPI.Controllers
             try
             {
                 bool isSuccess = await _cartRepository.RemoveFromCart(cartId);
+                _response.Result = isSuccess;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
+        }
+
+        [HttpPost("ApplyCoupon")]
+        public async Task<object> ApplyCoupon([FromBody] CartDto cartDto)
+        {
+            try
+            {
+                bool isSuccess = await _cartRepository.ApplyCoupon(cartDto.CartHeader.UserId,
+                    cartDto.CartHeader.CouponCode);
+                _response.Result = isSuccess;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
+        }
+
+        [HttpPost("RemoveCoupon")]
+        public async Task<object> RemoveCoupon([FromBody] string userId)
+        {
+            try
+            {
+                bool isSuccess = await _cartRepository.RemoveCoupon(userId);
                 _response.Result = isSuccess;
             }
             catch (Exception ex)
