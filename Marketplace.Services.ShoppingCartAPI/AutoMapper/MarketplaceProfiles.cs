@@ -11,7 +11,7 @@ namespace Marketplace.Services.ShoppingCartAPI.AutoMapper
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CartHeader, CartHeaderDto>().ReverseMap();
             CreateMap<CartDetails, CartDetailsDto>().ReverseMap();
-            CreateMap<Cart, CartDto>().ReverseMap();
+            CreateMap<Cart, CartDto>().ReverseMap(); 
         }
     }
 }

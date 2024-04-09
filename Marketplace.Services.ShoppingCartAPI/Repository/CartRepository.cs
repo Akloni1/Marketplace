@@ -110,6 +110,11 @@ namespace Marketplace.Services.ShoppingCartAPI.Repository
                 CartHeader = await _db.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId)
             };
 
+            if(cart.CartHeader == null)
+            {
+                cart.CartHeader = new CartHeader();
+            }
+
             cart.CartDetails = _db.CartDetails
                 .Where(u => u.CartHeaderId == cart.CartHeader.CartHeaderId).Include(u => u.Product);
 
