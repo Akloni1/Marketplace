@@ -10,5 +10,6 @@ namespace Marketplace.Web.Services.IServices
         Task<T> RemoveFromCartAsync<T>(int cartId, string token = "");
         Task<T> ApplyCoupon<T>(CartDto cartDto, string token = "");
         Task<T> RemoveCoupon<T>(string userId, string token = "");
+        Task<T> Checkout<T>(CartHeaderDto cartHeader, string token = "");
     }
 }
