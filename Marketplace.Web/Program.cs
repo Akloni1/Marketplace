@@ -43,11 +43,13 @@ namespace Marketplace.Web
 
             builder.Services.AddHttpClient<IProductService, ProductService>();
             builder.Services.AddHttpClient<ICartService, CartService>();
+            builder.Services.AddHttpClient<ICouponService, CouponService>();
             SD.ProductAPIBase = configuration["ServiceUrls:ProductAPI"];
             SD.ShoppingCartAPIBase = configuration["ServiceUrls:ShoppingCartAPI"];
-
+            SD.CouponAPIBase = configuration["ServiceUrls:CouponAPI"];
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<ICouponService, CouponService>();
 
             var app = builder.Build();
 
