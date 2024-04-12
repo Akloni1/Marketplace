@@ -1,10 +1,10 @@
+using Marketplace.Services.OrderAPI.RabbitMQ.Producer;
 using Marketplace.Services.ShoppingCartAPI.DbContexts;
+using Marketplace.Services.ShoppingCartAPI.RabbitMQ.Interfaces;
 using Marketplace.Services.ShoppingCartAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RabbitMQ.Interfaces;
-using RabbitMQ.Producer;
 
 namespace Marketplace.Services.ShoppingCartAPI
 {

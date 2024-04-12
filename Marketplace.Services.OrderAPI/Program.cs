@@ -1,10 +1,11 @@
-using Marketplace.Services.CouponAPI.DbContexts;
-using Marketplace.Services.CouponAPI.Respository;
+using Marketplace.Services.OrderAPI.DbContexts;
+using Marketplace.Services.OrderAPI.RabbitMQ.Consumer;
+using Marketplace.Services.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace Marketplace.Services.CouponAPI
+namespace Marketplace.Services.OrderAPI
 {
     public class Program
     {
@@ -12,15 +13,16 @@ namespace Marketplace.Services.CouponAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddAutoMapper(typeof(Program));
 
-            builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+            // Add services to the container.
 
             builder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
 
             builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
             {
@@ -39,9 +41,7 @@ namespace Marketplace.Services.CouponAPI
                     policy.RequireClaim("scope", "marketplace");
                 });
             });
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -74,6 +74,8 @@ namespace Marketplace.Services.CouponAPI
 
                 });
             });
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddHostedService<RabbitMqListener>();
 
             var app = builder.Build();
 
@@ -85,7 +87,7 @@ namespace Marketplace.Services.CouponAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();
+
             app.UseAuthorization();
 
 

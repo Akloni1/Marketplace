@@ -1,7 +1,8 @@
 ﻿using Marketplace.Services.ShoppingCartAPI.Models.Dto;
+using Marketplace.Services.ShoppingCartAPI.RabbitMQ.Interfaces;
 using Marketplace.Services.ShoppingCartAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Interfaces;
+
 
 namespace Marketplace.Services.ShoppingCartAPI.Controllers
 {

@@ -1,5 +1,4 @@
-﻿using RabbitMQ.Models;
-
+﻿
 namespace Marketplace.Web.Models
 {
     public class CartHeaderDto// : BaseMessage
