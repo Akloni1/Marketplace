@@ -3,6 +3,8 @@ using Marketplace.Services.ShoppingCartAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Interfaces;
+using RabbitMQ.Producer;
 
 namespace Marketplace.Services.ShoppingCartAPI
 {
@@ -74,6 +76,8 @@ namespace Marketplace.Services.ShoppingCartAPI
 
                 });
             });
+
+            builder.Services.AddScoped<IMessageRabbitMQProducer, RabbitMQProducer>();
 
             var app = builder.Build();
 

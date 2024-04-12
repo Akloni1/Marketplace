@@ -1,6 +1,7 @@
 ﻿using Marketplace.Services.ShoppingCartAPI.Models.Dto;
 using Marketplace.Services.ShoppingCartAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Interfaces;
 
 namespace Marketplace.Services.ShoppingCartAPI.Controllers
 {
@@ -10,11 +11,13 @@ namespace Marketplace.Services.ShoppingCartAPI.Controllers
     {
         private readonly ICartRepository _cartRepository;
         protected ResponseDto _response;
+        private readonly IMessageRabbitMQProducer _messagePublisher;
 
-        public CartAPIController(ICartRepository cartRepository)
+        public CartAPIController(ICartRepository cartRepository, IMessageRabbitMQProducer messagePublisher)
         {
             _cartRepository = cartRepository?? throw new ArgumentNullException(nameof(cartRepository));
             _response = new ResponseDto();
+            _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -126,7 +129,7 @@ namespace Marketplace.Services.ShoppingCartAPI.Controllers
                 }
                 checkoutHeader.CartDetails = cartDto.CartDetails;
                 //logic to add message to process order.
-
+                _messagePublisher.SendMessage(checkoutHeader);
             }
             catch (Exception ex)
             {

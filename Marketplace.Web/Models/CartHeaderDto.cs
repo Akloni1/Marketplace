@@ -1,6 +1,8 @@
-﻿namespace Marketplace.Web.Models
+﻿using RabbitMQ.Models;
+
+namespace Marketplace.Web.Models
 {
-    public class CartHeaderDto
+    public class CartHeaderDto// : BaseMessage
     {
         public int CartHeaderId { get; set; }
         public string UserId { get; set; }
