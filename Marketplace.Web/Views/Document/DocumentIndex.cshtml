@@ -1,0 +1,43 @@
+﻿
+<br />
+<br />
+<div class="container p-4 border">
+	<div class="row pb-2">
+		<div class="col">
+			<h1 class="text-primary">Список документов</h1>
+		</div>
+		<div class="col text-end pt-1">
+			<a asp-action="ProductCreate" class="btn btn-outline-primary"><i class="fas fa-plus"></i> Создать новый товар</a>
+		</div>
+	</div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					Название
+				</th>
+				<th>
+					Тип
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+
+			   <tr>
+				<td>
+				Политика обработки персональных данных
+				</td>
+				<td>
+				docx
+				</td>
+				<td>
+					<a asp-action="DocumentDownload" class="btn btn-link" asp-route-code="DocPolit.docx">
+				  <i class="fas fa-download"></i>
+				 </a>
+				</td>
+			   </tr>
+			
+  </tbody>
+ </table>
+</div>
