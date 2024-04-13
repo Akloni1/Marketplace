@@ -2,6 +2,7 @@ using Marketplace.Services.ProductAPI.DbContexts;
 using Marketplace.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -15,6 +16,8 @@ namespace Marketplace.Services.ProductAPI
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<Migrate>();
 
             builder.Services.AddAutoMapper(typeof(Program));
 
@@ -80,6 +83,10 @@ namespace Marketplace.Services.ProductAPI
 
 
             var app = builder.Build();
+            using var scope = app.Services.CreateScope();
+            var migrate = scope.ServiceProvider.GetService<Migrate>();
+            migrate.MigrateProduct();
+            migrate.InitializeProducts();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

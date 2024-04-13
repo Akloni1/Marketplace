@@ -2,8 +2,8 @@
 
 <div class="login-page">
     <div class="lead">
-        <h1>Register</h1>
-        <p>Choose how to register</p>
+        <h1>Регистрация</h1>
+        <p>Выберите способ регистрации</p>
     </div>
 
     <partial name="_ValidationSummary" />
@@ -13,7 +13,7 @@
         <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
-                    <h2>Local Account Register</h2>
+                    <h2>Введите данные для регистрации</h2>
                 </div>
 
                 <div class="card-body">
@@ -21,35 +21,35 @@
                         <input type="hidden" asp-for="ReturnUrl" />
 
                         <div class="form-group">
-                            <label asp-for="Username"></label>
-                            <input class="form-control" placeholder="Username" asp-for="Username" autofocus>
+                            <label asp-for="Username"> Логин </label>
+                            <input class="form-control" asp-for="Username" autofocus>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Email"></label>
-                            <input class="form-control" placeholder="email" asp-for="Email" autofocus>
+                            <label asp-for="Email"> Эл. Почта </label>
+                            <input class="form-control" asp-for="Email" autofocus>
                         </div>
                         <div class="form-group">
-                            <label asp-for="FirstName"></label>
-                            <input class="form-control" placeholder="first name" asp-for="FirstName" autofocus>
+                            <label asp-for="FirstName"> Имя </label>
+                            <input class="form-control" asp-for="FirstName" autofocus>
                         </div>
                         <div class="form-group">
-                            <label asp-for="LastName"></label>
-                            <input class="form-control" placeholder="lastname" asp-for="LastName" autofocus>
+                            <label asp-for="LastName"> Фамилия </label>
+                            <input class="form-control" asp-for="LastName" autofocus>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Password"></label>
-                            <input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
+                            <label asp-for="Password"> Пароль </label>
+                            <input type="password" class="form-control" asp-for="Password" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label asp-for="RoleName"></label>
+                            <label asp-for="RoleName"> Роль </label>
                             <select asp-for="RoleName" class="form-control" asp-items="@(new SelectList(ViewBag.message))"></select>
                         </div>
-                        <button class="btn btn-primary" name="button" value="Register">Register</button>
-                        <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
+                        <button class="btn btn-primary" name="button" value="Register"> Зарегистрироваться </button>
+                        <button class="btn btn-secondary" name="button" value="cancel"> Отмена </button>
                     </form>
                 </div>
                 <div class="card-footer">
-                    <a href="@Url.Action("Login",new {Model.ReturnUrl })">Login</a>
+                    <a href="@Url.Action("Login",new {Model.ReturnUrl })"> Войти </a>
                 </div>
             </div>
         </div>
