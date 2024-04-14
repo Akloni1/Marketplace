@@ -2,7 +2,10 @@
 using Marketplace.Services.ProductAPI.DbContexts;
 using Marketplace.Services.ProductAPI.Models;
 using Marketplace.Services.ProductAPI.Models.Dto;
+using Marketplace.Services.ProductAPI.Redis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Diagnostics;
 
 namespace Marketplace.Services.ProductAPI.Repository
 {
@@ -10,11 +13,13 @@ namespace Marketplace.Services.ProductAPI.Repository
     {
         private readonly ApplicationDbContext _db;
         private IMapper _mapper;
+        private readonly IDistributedCache _cache;
 
-        public ProductRepository(ApplicationDbContext db, IMapper mapper)
+        public ProductRepository(ApplicationDbContext db, IMapper mapper, IDistributedCache cache)
         {
             _db = db;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<ProductDto> CreateUpdateProduct(ProductDto productDto)
@@ -59,7 +64,19 @@ namespace Marketplace.Services.ProductAPI.Repository
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            var productList = await _db.Products.ToListAsync();
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            var productList = await _cache.GetRecordAsync<List<Product>>("Products");
+
+            if (productList is null)
+            {
+                productList = await _db.Products.ToListAsync();
+                await _cache.SetRecordAsync("Products", productList);
+            }
+            stopwatch.Stop();
+            //смотрим сколько миллисекунд было затрачено на выполнение
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
             return _mapper.Map<List<ProductDto>>(productList);
         }
     }

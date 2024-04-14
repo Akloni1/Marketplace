@@ -14,6 +14,12 @@ namespace Marketplace.Web
                             .Build();
 
             // Add services to the container.
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("Redis");
+                options.InstanceName = "RedisDemo_";
+            });
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAuthentication(options =>
@@ -74,6 +80,15 @@ namespace Marketplace.Web
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "/home/render",
+                    defaults: new { controller = "Home", action = "IndexRender" }
+                );
+            });
 
             app.Run();
         }

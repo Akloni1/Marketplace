@@ -17,6 +17,12 @@ namespace Marketplace.Services.ProductAPI
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("Redis");
+                options.InstanceName = "RedisDemo_";
+            });
+
             builder.Services.AddScoped<Migrate>();
 
             builder.Services.AddAutoMapper(typeof(Program));

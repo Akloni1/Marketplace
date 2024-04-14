@@ -4,7 +4,9 @@ using Marketplace.Web.Services.IServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 
 namespace Marketplace.Web.Controllers
@@ -14,15 +16,45 @@ namespace Marketplace.Web.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IProductService _productService;
         private readonly ICartService _cartService;
+        private readonly HttpClient _httpClient;
+        private readonly IDistributedCache _cache;
 
-        public HomeController(ILogger<HomeController> logger, IProductService productService, ICartService cartService)
+        public HomeController(ILogger<HomeController> logger, IProductService productService, ICartService cartService, HttpClient httpClient, IDistributedCache cache)
         {
             _logger = logger;
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _cartService = cartService;
+            _httpClient = httpClient;
+            _cache = cache;
         }
 
         public async Task<IActionResult> Index()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            byte[] content = await _cache.GetAsync("https://localhost:7025/home/render");
+
+            if (content is null)
+            {
+                var options = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
+                };
+                HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7025/home/render");
+                content = await response.Content.ReadAsByteArrayAsync();
+                await _cache.SetAsync("https://localhost:7025/home/render", content, options); 
+            }
+
+            stopwatch.Stop();
+            //смотрим сколько миллисекунд было затрачено на выполнение
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            return File(content, "text/html");
+        }
+
+        [HttpGet]
+        [ActionName("IndexRender")]
+        public async Task<IActionResult> IndexRender()
         {
             var res = new List<ProductDto>();
             var response = await _productService.GetAllProductsAsync<ResponseDto>("");
@@ -30,7 +62,7 @@ namespace Marketplace.Web.Controllers
             {
                 res = JsonConvert.DeserializeObject<List<ProductDto>>(response.Result.ToString());
             }
-            return View(res);
+            return View("Index", res);
         }
 
         [Authorize]
