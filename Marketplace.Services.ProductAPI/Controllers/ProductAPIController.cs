@@ -2,6 +2,7 @@
 using Marketplace.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data;
 
 namespace Marketplace.Services.ProductAPI.Controllers
@@ -51,6 +52,25 @@ namespace Marketplace.Services.ProductAPI.Controllers
                      = new List<string>() { ex.ToString() };
             }
             return _response;
+        }
+
+        [HttpGet]
+        [Route("httphomepage")]
+        public async Task<byte[]> GetHttpHomePage()
+        {
+            try
+            {
+                var page = await _productRepository.GetHttpHomePage();
+                _response.Result = page;
+                return page;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages
+                     = new List<string>() { ex.ToString() };
+            }
+            return null;
         }
 
         [Authorize]

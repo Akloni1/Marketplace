@@ -30,26 +30,8 @@ namespace Marketplace.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
-            byte[] content = await _cache.GetAsync("https://localhost:7025/home/render");
-
-            if (content is null)
-            {
-                var options = new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
-                };
-                HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7025/home/render");
-                content = await response.Content.ReadAsByteArrayAsync();
-                await _cache.SetAsync("https://localhost:7025/home/render", content, options); 
-            }
-
-            stopwatch.Stop();
-            //смотрим сколько миллисекунд было затрачено на выполнение
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            return File(content, "text/html");
+            var response = await _productService.GetHttpHomePage<byte[]>("");
+            return File(response, "text/html");
         }
 
         [HttpGet]

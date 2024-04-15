@@ -52,6 +52,16 @@ namespace Marketplace.Web.Services
             });
         }
 
+        public async Task<T> GetHttpHomePage<T>(string token)
+        {
+            return await SendAsync<T>(new ApiRequest()
+            {
+                ApiType = SD.ApiType.GET,
+                Url = SD.ProductAPIBase + "/api/products/httphomepage",
+                AccessToken = token
+            });
+        }
+
         public async Task<T> UpdateProductAsync<T>(ProductDto productDto, string token)
         {
             return await SendAsync<T>(new ApiRequest()

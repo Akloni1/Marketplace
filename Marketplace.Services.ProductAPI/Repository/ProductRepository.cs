@@ -14,12 +14,14 @@ namespace Marketplace.Services.ProductAPI.Repository
         private readonly ApplicationDbContext _db;
         private IMapper _mapper;
         private readonly IDistributedCache _cache;
+        private readonly HttpClient _httpClient;
 
-        public ProductRepository(ApplicationDbContext db, IMapper mapper, IDistributedCache cache)
+        public ProductRepository(ApplicationDbContext db, IMapper mapper, IDistributedCache cache, HttpClient httpClient)
         {
             _db = db;
             _mapper = mapper;
             _cache = cache;
+            _httpClient = httpClient;
         }
 
         public async Task<ProductDto> CreateUpdateProduct(ProductDto productDto)
@@ -78,6 +80,30 @@ namespace Marketplace.Services.ProductAPI.Repository
             //смотрим сколько миллисекунд было затрачено на выполнение
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
             return _mapper.Map<List<ProductDto>>(productList);
+        }
+
+        public async Task<byte[]> GetHttpHomePage()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            byte[] content = await _cache.GetAsync("https://localhost:7025/home/render");
+
+            if (content is null)
+            {
+                var options = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
+                };
+                HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7025/home/render");
+                content = await response.Content.ReadAsByteArrayAsync();
+                await _cache.SetAsync("https://localhost:7025/home/render", content, options);
+            }
+
+            stopwatch.Stop();
+            //смотрим сколько миллисекунд было затрачено на выполнение
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            return content;
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Marketplace.Services.ProductAPI
                 options.Configuration = builder.Configuration.GetConnectionString("Redis");
                 options.InstanceName = "RedisDemo_";
             });
+            builder.Services.AddScoped<HttpClient>();
 
             builder.Services.AddScoped<Migrate>();
 

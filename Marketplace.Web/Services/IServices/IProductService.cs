@@ -9,5 +9,6 @@ namespace Marketplace.Web.Services.IServices
         Task<T> CreateProductAsync<T>(ProductDto productDto, string token);
         Task<T> UpdateProductAsync<T>(ProductDto productDto, string token);
         Task<T> DeleteProductAsync<T>(int id, string token);
+        Task<T> GetHttpHomePage<T>(string token);
     }
 }

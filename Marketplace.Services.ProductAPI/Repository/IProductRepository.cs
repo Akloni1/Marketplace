@@ -8,5 +8,6 @@ namespace Marketplace.Services.ProductAPI.Repository
         Task<ProductDto> GetProductById(int productId);
         Task<ProductDto> CreateUpdateProduct(ProductDto productDto);
         Task<bool> DeleteProduct(int productId);
+        Task<byte[]> GetHttpHomePage();
     }
 }
