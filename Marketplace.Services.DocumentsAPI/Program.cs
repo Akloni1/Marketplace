@@ -13,10 +13,11 @@ namespace Marketplace.Services.DocumentsAPI
 
 
             // Add services to the container.
-            builder.Services.AddStackExchangeRedisCache(options =>
+            builder.Services.AddDistributedSqlServerCache(options =>
             {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis");
-                options.InstanceName = "RedisDemo_";
+                options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                options.SchemaName = "dbo";
+                options.TableName = "ProdCache";
             });
 
             builder.Services.AddControllers();

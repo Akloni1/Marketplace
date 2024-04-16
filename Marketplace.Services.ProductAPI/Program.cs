@@ -16,12 +16,14 @@ namespace Marketplace.Services.ProductAPI
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.AddStackExchangeRedisCache(options =>
+            // dotnet sql-cache create "Server=DESKTOP-JUI9V07;Database=MarketplaceProduct;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" dbo ProdCache 
+            builder.Services.AddDistributedSqlServerCache(options =>
             {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis");
-                options.InstanceName = "RedisDemo_";
+                options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                options.SchemaName = "dbo";
+                options.TableName = "ProdCache";
             });
+
             builder.Services.AddScoped<HttpClient>();
 
             builder.Services.AddScoped<Migrate>();
