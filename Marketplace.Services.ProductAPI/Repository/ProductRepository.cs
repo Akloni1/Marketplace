@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Marketplace.Services.ProductAPI.Repository
 {
@@ -87,18 +87,19 @@ namespace Marketplace.Services.ProductAPI.Repository
                 Stopwatch stopwatch = new Stopwatch();
                 //засекаем время начала операции
                 stopwatch.Start();
-                var cacheClient = igniteClient.GetOrCreateCache<string, List<Product>>("Marketplace");
+                var cacheClient = igniteClient.GetOrCreateCache<string, string>("Marketplace");
 
                
-                if (cacheClient.TryGet("Products", out var order)){
-                    keysReceived.Enqueue("Products");
-                    res = order;
+                if (cacheClient.TryGet("ProductsString", out var products)){
+                    keysReceived.Enqueue("ProductsString");
+                    res = JsonConvert.DeserializeObject<List<Product>>(products?? "")?? throw new InvalidOperationException();
                 }
                 else
                 {
                     var productList = await _db.Products.ToListAsync();
-                    cacheClient.Put("Products", productList);
-                    keysCreated.Enqueue("Products");
+                    var productListStr = JsonConvert.SerializeObject(productList);
+                    cacheClient.Put("ProductsString", productListStr);
+                    keysCreated.Enqueue("ProductsString");
                     res = productList;
                 }
                
