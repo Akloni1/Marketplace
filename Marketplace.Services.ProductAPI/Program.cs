@@ -1,3 +1,4 @@
+using Enyim.Caching.Configuration;
 using Marketplace.Services.ProductAPI.DbContexts;
 using Marketplace.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,14 @@ namespace Marketplace.Services.ProductAPI
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis");
-                options.InstanceName = "RedisDemo_";
+            builder.Services.AddEnyimMemcached(memcachedClientOptions => {
+                memcachedClientOptions.Servers.Add(new Server
+                {
+                    Address = "127.0.0.1",
+                    Port = 11211
+                });
             });
+
             builder.Services.AddScoped<HttpClient>();
 
             builder.Services.AddScoped<Migrate>();

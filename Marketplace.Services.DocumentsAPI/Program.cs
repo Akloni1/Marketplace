@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Enyim.Caching.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 
@@ -13,10 +14,12 @@ namespace Marketplace.Services.DocumentsAPI
 
 
             // Add services to the container.
-            builder.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = builder.Configuration.GetConnectionString("Redis");
-                options.InstanceName = "RedisDemo_";
+            builder.Services.AddEnyimMemcached(memcachedClientOptions => {
+                memcachedClientOptions.Servers.Add(new Server
+                {
+                    Address = "127.0.0.1",
+                    Port = 11211
+                });
             });
 
             builder.Services.AddControllers();
