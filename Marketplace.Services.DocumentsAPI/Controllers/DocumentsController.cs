@@ -1,8 +1,11 @@
-﻿using Marketplace.Services.DocumentsAPI.Models;
+﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Client;
+using Marketplace.Services.DocumentsAPI.Models;
 using Marketplace.Services.DocumentsAPI.Redis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace Marketplace.Services.DocumentsAPI.Controllers
@@ -20,43 +23,51 @@ namespace Marketplace.Services.DocumentsAPI.Controllers
         [HttpGet("{code}")]
         public async Task<FileData> GetDocumentDocxByCode(string code)
         {
+            var keysCreated = new ConcurrentQueue<string>();
+            var keysReceived = new ConcurrentQueue<string>();
 
-            var options = new DistributedCacheEntryOptions
+            var clientConfiguration = new IgniteClientConfiguration
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10),
+                Endpoints = new List<string>
+                    {
+                    "localhost"
+                    }
             };
 
-
-
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
-
-            var dirClone = Path.GetFullPath(Path.Combine(code));
-            
-            var contentCache = await _cache.GetAsync("content");
-
-            byte[] content;
-            if (contentCache is null)
+            using (var igniteClient = Ignition.StartClient(clientConfiguration))
             {
-                Console.WriteLine("Не Из Кэша");
-                content = await System.IO.File.ReadAllBytesAsync(dirClone);
-                await _cache.SetAsync("content", content, options);
-            }
-            else
-            {
-                Console.WriteLine("Из Кэша");
-                content = contentCache;
-            }
-            stopwatch.Stop();
-            //смотрим сколько миллисекунд было затрачено на выполнение
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                Stopwatch stopwatch = new Stopwatch();
+                //засекаем время начала операции
+                stopwatch.Start();
 
-            var fileName = Path.GetFileName(dirClone);
-            new FileExtensionContentTypeProvider()
-                .TryGetContentType(fileName, out string contentType);
+                var dirClone = Path.GetFullPath(Path.Combine(code));
 
-            return new FileData { content = content, contentType = contentType, fileName = fileName };
+
+
+                var cacheClient = igniteClient.GetOrCreateCache<string, byte[]>("Marketplace");
+
+                if (cacheClient.TryGet("content", out var content))
+                {
+                    keysReceived.Enqueue("content");
+                }
+                else
+                {
+                    content = await System.IO.File.ReadAllBytesAsync(dirClone);
+                    cacheClient.Put("content", content);
+                    keysCreated.Enqueue("content");
+                }
+
+                stopwatch.Stop();
+                //смотрим сколько миллисекунд было затрачено на выполнение
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                var fileName = Path.GetFileName(dirClone);
+                new FileExtensionContentTypeProvider()
+                    .TryGetContentType(fileName, out string contentType);
+
+                return new FileData { content = content, contentType = contentType, fileName = fileName };
+            }
+
+
         }
     }
 }

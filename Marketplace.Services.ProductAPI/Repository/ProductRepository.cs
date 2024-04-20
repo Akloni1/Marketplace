@@ -1,11 +1,15 @@
-﻿using AutoMapper;
+﻿using Apache.Ignite.Core.Client;
+using Apache.Ignite.Core;
+using AutoMapper;
 using Marketplace.Services.ProductAPI.DbContexts;
 using Marketplace.Services.ProductAPI.Models;
 using Marketplace.Services.ProductAPI.Models.Dto;
 using Marketplace.Services.ProductAPI.Redis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Marketplace.Services.ProductAPI.Repository
 {
@@ -66,44 +70,85 @@ namespace Marketplace.Services.ProductAPI.Repository
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
-            var productList = await _cache.GetRecordAsync<List<Product>>("Products");
+            List<Product> res = null;
+            var keysCreated = new ConcurrentQueue<string>();
+            var keysReceived = new ConcurrentQueue<string>();
 
-            if (productList is null)
+            var clientConfiguration = new IgniteClientConfiguration
             {
-                productList = await _db.Products.ToListAsync();
-                await _cache.SetRecordAsync("Products", productList);
+                Endpoints = new List<string>
+                    {
+                    "localhost"
+                    }
+            };
+
+            using (var igniteClient = Ignition.StartClient(clientConfiguration))
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                //засекаем время начала операции
+                stopwatch.Start();
+                var cacheClient = igniteClient.GetOrCreateCache<string, List<Product>>("Marketplace");
+
+               
+                if (cacheClient.TryGet("Products", out var order)){
+                    keysReceived.Enqueue("Products");
+                    res = order;
+                }
+                else
+                {
+                    var productList = await _db.Products.ToListAsync();
+                    cacheClient.Put("Products", productList);
+                    keysCreated.Enqueue("Products");
+                    res = productList;
+                }
+               
+                stopwatch.Stop();
+                //смотрим сколько миллисекунд было затрачено на выполнение
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
             }
-            stopwatch.Stop();
-            //смотрим сколько миллисекунд было затрачено на выполнение
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            return _mapper.Map<List<ProductDto>>(productList);
+            return _mapper.Map<List<ProductDto>>(res);
         }
 
         public async Task<byte[]> GetHttpHomePage()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
-            byte[] content = await _cache.GetAsync("https://localhost:7025/home/render");
 
-            if (content is null)
+            byte[] res = null;
+            var keysCreated = new ConcurrentQueue<string>();
+            var keysReceived = new ConcurrentQueue<string>();
+
+            var clientConfiguration = new IgniteClientConfiguration
             {
-                var options = new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
-                };
-                HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7025/home/render");
-                content = await response.Content.ReadAsByteArrayAsync();
-                await _cache.SetAsync("https://localhost:7025/home/render", content, options);
-            }
+                Endpoints = new List<string>
+                    {
+                    "localhost"
+                    }
+            };
 
-            stopwatch.Stop();
-            //смотрим сколько миллисекунд было затрачено на выполнение
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            return content;
+            using (var igniteClient = Ignition.StartClient(clientConfiguration))
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                //засекаем время начала операции
+                stopwatch.Start();
+                var cacheClient = igniteClient.GetOrCreateCache<string, byte[]>("Marketplace");
+
+                if (cacheClient.TryGet("https://localhost:7025/home/render", out var content))
+                {
+                    keysReceived.Enqueue("https://localhost:7025/home/render");
+                    res = content;
+                }
+                else
+                {
+                    HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7025/home/render");
+                    content = await response.Content.ReadAsByteArrayAsync();
+                    cacheClient.Put("https://localhost:7025/home/render", content);
+                    keysCreated.Enqueue("https://localhost:7025/home/render");
+                    res = content;
+                }
+                stopwatch.Stop();
+                //смотрим сколько миллисекунд было затрачено на выполнение
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            }
+            return res;
         }
     }
 }
